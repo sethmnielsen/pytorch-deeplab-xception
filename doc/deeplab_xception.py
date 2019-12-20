@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,7 +10,7 @@ BatchNorm2d = SynchronizedBatchNorm2d
 
 class SeparableConv2d(nn.Module):
     def __init__(self, inplanes, planes, kernel_size=3, stride=1, padding=0, dilation=1, bias=False):
-        super(SeparableConv2d, self)._init_()
+        super(SeparableConv2d, self)._init_()   
 
         self.conv1 = nn.Conv2d(inplanes, inplanes, kernel_size, stride, padding, dilation,
                                groups=inplanes, bias=bias)
@@ -107,6 +108,10 @@ class Xception(nn.Module):
     """
     def __init__(self, inplanes=3, os=16, pretrained=False):
         super(Xception, self).__init__()
+
+        """
+        os: output_stride - the ratio of input to output spatial resolution
+        """
 
         if os == 16:
             entry_block3_stride = 2
@@ -411,6 +416,18 @@ def get_10x_lr_params(model):
             if k.requires_grad:
                 yield k
 
+def count_parameters(model):
+    total_param = 0
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            num_param = np.prod(param.size())
+            if param.dim() > 1:
+                print(name, ':', 'x'.join(str(x)
+                                          for x in list(param.size())), '=', num_param)
+            else:
+                print(name, ':', num_param)
+            total_param += num_param
+    return total_param
 
 if __name__ == "__main__":
     model = DeepLabv3_plus(nInputChannels=3, n_classes=21, os=16, pretrained=True, _print=True)
@@ -418,7 +435,9 @@ if __name__ == "__main__":
     image = torch.randn(1, 3, 512, 512)
     with torch.no_grad():
         output = model.forward(image)
-    print(output.size())
+    print(f'output size: {output.size()}')
+
+    print(f'\nnumber of parameters: {count_parameters(model)}')
 
 
 

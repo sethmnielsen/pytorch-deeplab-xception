@@ -1,3 +1,5 @@
+import sys
+sys.path.append('/home/seth/dev/coco_dataset/annotations')
 import numpy as np
 import torch
 from torch.utils.data import Dataset
@@ -13,9 +15,11 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class COCOSegmentation(Dataset):
-    NUM_CLASSES = 21
-    CAT_LIST = [0, 5, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
-        1, 64, 20, 63, 7, 72]
+    NUM_CLASSES = 3
+    CAT_LIST = [0, 1, 9]
+    # NUM_CLASSES = 21
+    # CAT_LIST = [0, 5, 2, 16, 9, 44, 6, 3, 17, 62, 21, 67, 18, 19, 4,
+        # 1, 64, 20, 63, 7, 72]
 
     def __init__(self,
                  args,
